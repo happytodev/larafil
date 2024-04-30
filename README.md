@@ -1,4 +1,4 @@
-Larafil was created by [HappyToDev](https://github.com/happytodev) and was inspired by [Povilas Korop](https://github.com/LaravelDaily)'s [tweet](https://x.com/povilaskorop/status/1784916290982826462?s=46&t=8FgNEQBLlkAK3L6Zwe_KyQ).
+Larafil was created by [HappyToDev](https://github.com/happytodev) and was inspired by a [Povilas Korop](https://github.com/LaravelDaily)'s [tweet](https://x.com/povilaskorop/status/1784916290982826462?s=46&t=8FgNEQBLlkAK3L6Zwe_KyQ).
 
 Get it on Packagist and just use it :
 
@@ -28,7 +28,31 @@ larafil install --create-user --serve
 
 The purpose of Larafil was to play with Laravel Zero from [Nuno Maduro](https://github.com/nunomaduro).
 
+## How to build Larafil
 
+1. git clone
+
+```bash
+git clone https://github.com/happytodev/larafil.git larafil
+```
+
+2. Composer install
+
+```bash
+composer install
+```
+
+3. Build the app
+
+```bash
+php larafil app:build
+``` 
+
+4. It's ready
+
+```bash
+./builds/larafil -V
+```
 
 ## Support the development
 
