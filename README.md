@@ -1,3 +1,10 @@
+<p align="center">
+  <a href="https://packagist.org/packages/happytodev/larafil"><img src="https://img.shields.io/packagist/dt/happytodev/larafil.svg?style=flat-square" alt="Total Downloads" /></a>
+  <a href="https://packagist.org/packages/happytodev/larafil"><img src="https://img.shields.io/packagist/v/happytodev/larafil?label=stable" alt="Latest Stable Version" /></a>
+  <a href="https://packagist.org/packages/happytodev/larafil"><img src="https://img.shields.io/packagist/l/happytodev/larafil.svg" alt="License" /></a>
+</p>
+
+
 Larafil was created by [HappyToDev](https://github.com/happytodev) and was inspired by a [Povilas Korop](https://github.com/LaravelDaily)'s [tweet](https://x.com/povilaskorop/status/1784916290982826462?s=46&t=8FgNEQBLlkAK3L6Zwe_KyQ).
 
 Get it on Packagist 
