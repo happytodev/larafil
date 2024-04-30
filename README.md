@@ -1,6 +1,12 @@
 Larafil was created by [HappyToDev](https://github.com/happytodev) and was inspired by a [Povilas Korop](https://github.com/LaravelDaily)'s [tweet](https://x.com/povilaskorop/status/1784916290982826462?s=46&t=8FgNEQBLlkAK3L6Zwe_KyQ).
 
-Get it on Packagist and just use it :
+Get it on Packagist 
+
+```bash
+composer global require happytodev/larafil
+```
+
+and just use it :
 
 ```bash
 larafil install
