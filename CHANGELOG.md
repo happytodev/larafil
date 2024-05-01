@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.2.3] - 2024-05-01
+
+### Removed
+
+- Databases options like migrate, db:wipe, migrate:xxx, etc
+
 ## [0.2.1] - 2024-05-01
 
 ### Added
