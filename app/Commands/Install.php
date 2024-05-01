@@ -2,8 +2,11 @@
 
 namespace App\Commands;
 
-use Illuminate\Console\Scheduling\Schedule;
+use PDO;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
 class Install extends Command
@@ -15,6 +18,7 @@ class Install extends Command
      */
     protected $signature = 'install
                             {--create-user}
+                            {--mysql}
                             {--serve}';
 
     /**
@@ -23,9 +27,10 @@ class Install extends Command
      * @var string
      */
     protected $description = 'Install Laravel and Filament.' . PHP_EOL .
-                              '               Options:' . PHP_EOL .
-                              '                  * --create-user: Whether an user should be created' . PHP_EOL .
-                              '                  * --serve: Whether the integrated server should be run';
+        '               Options:' . PHP_EOL .
+        '                  * --create-user: Whether an user should be created' . PHP_EOL .
+        '                  * --mysql: Whether a mysql database has to be used instead the sqlite default one' . PHP_EOL .
+        '                  * --serve: Whether the integrated server should be run';
 
     /**
      * Execute the console command.
@@ -41,6 +46,19 @@ class Install extends Command
 
         // Move to project folder
         chdir($applicationName);
+
+
+        // Check if a mysql database need to be installed instead the sqlite default one
+        if ($this->hasOption('mysql') && $this->option('mysql') === true) {
+            $this->info("Change configuration in your .env file");
+            $this->configureDatabase($applicationName);
+            $this->info("Creating the mysql database...");
+            $this->createDatabase($applicationName);
+            $this->info("Running the migration...");
+            $this->runMigrations();
+            $this->info("Removing sqlite database...");
+            $this->deleteSqliteDatabase();
+        }
 
         // Install Filament
         $this->info("Installing Filament...");
@@ -68,5 +86,51 @@ class Install extends Command
      */
     public function schedule(Schedule $schedule): void
     {
+    }
+
+    private function configureDatabase(string $databaseName)
+    {
+        $dbHost = '127.0.0.1';
+        $dbName = "$databaseName";
+        $dbUser = 'root';
+        $dbPassword = '';
+
+        file_put_contents('.env', str_replace(
+            [
+                'DB_CONNECTION=sqlite',
+                '# DB_HOST=127.0.0.1',
+                '# DB_PORT=3306',
+                '# DB_DATABASE=laravel',
+                '# DB_USERNAME=root',
+                '# DB_PASSWORD=',
+            ],
+            [
+                'DB_CONNECTION=mysql',
+                'DB_HOST=' . $dbHost,
+                'DB_PORT=3306',
+                'DB_DATABASE=' . $dbName,
+                'DB_USERNAME=' . $dbUser,
+                'DB_PASSWORD=' . $dbPassword,
+            ],
+            file_get_contents('.env')
+        ));
+    }
+
+    private function createDatabase(string $databaseName)
+    {
+        passthru('php artisan config:cache');
+        passthru('php artisan migrate --force');
+    }
+
+    private function deleteSqliteDatabase()
+    {
+        if (file_exists('database/database.sqlite')) {
+            unlink('database/database.sqlite');
+        }
+    }
+
+    private function runMigrations()
+    {
+        Artisan::call('migrate');
     }
 }

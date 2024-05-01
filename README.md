@@ -39,6 +39,12 @@ Of course, you can combine the two options together :
 larafil install --create-user --serve
 ```
 
+If you want to use MySQL database instead the sqlite default one, you can use the `--mysql` option : 
+
+```bash
+larafil install --create-user --mysql --serve
+```
+
 The purpose of Larafil was to play with Laravel Zero from [Nuno Maduro](https://github.com/nunomaduro).
 
 ## How to build Larafil
