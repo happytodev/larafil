@@ -7,6 +7,24 @@
 
 Larafil was created by [HappyToDev](https://github.com/happytodev) and was inspired by a [Povilas Korop](https://github.com/LaravelDaily)'s [tweet](https://x.com/povilaskorop/status/1784916290982826462?s=46&t=8FgNEQBLlkAK3L6Zwe_KyQ).
 
+In one line, you can install Laravel and FilamenPHP :
+
+Exemple : 
+
+`larafil install --create-user --filament-url=batcave --mysql --serve`
+
+With this single line, **Larafil**
+
+- ask you the name of the project
+- will install Laravel (last version)
+- change default SQLite database by a MySQL database in your `.env` file, create the MySQL database, launch migrations, remove `database.sqlite` database
+- will install FilamentPHP
+- ask you to create the first Filament user
+- change the FilamentPHP admin URL to `batcave`
+- start the integrated server
+
+Every option is optional.
+
 ## How to use Larafil
 
 Get it on Packagist 
@@ -22,6 +40,16 @@ larafil install
 ```
 
 It will ask you the name of your future application.
+
+### Customize FilamentPHP admin url
+
+You can change the default '/admin' url to the url you want. You have just to pass the option with your new value :
+
+```bash
+larafil install --filament-url=batcave
+```
+
+Once the installation finished, you can access to your dashboard with `<url.of.your.project>/batcave>`
 
 ### Create a Filament user
 
