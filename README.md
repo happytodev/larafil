@@ -7,6 +7,8 @@
 
 Larafil was created by [HappyToDev](https://github.com/happytodev) and was inspired by a [Povilas Korop](https://github.com/LaravelDaily)'s [tweet](https://x.com/povilaskorop/status/1784916290982826462?s=46&t=8FgNEQBLlkAK3L6Zwe_KyQ).
 
+## How to use Larafil
+
 Get it on Packagist 
 
 ```bash
@@ -21,13 +23,17 @@ larafil install
 
 It will ask you the name of your future application.
 
+### Create a Filament user
+
 You can ask for a Filament user creation at the end of the installation : 
 
 ```bash
 larafil install --create-user
 ```
 
-and you can also ask to launch Laravel integrated server after the installation :
+### Serve your application
+
+You can also ask to launch Laravel integrated server after the installation :
 
 ```bash
 larafil install --serve
@@ -39,11 +45,24 @@ Of course, you can combine the two options together :
 larafil install --create-user --serve
 ```
 
+### Use MySQL database instead SQLite default one
+
 If you want to use MySQL database instead the sqlite default one, you can use the `--mysql` option : 
 
 ```bash
 larafil install --create-user --mysql --serve
 ```
+
+### Use Laravel 10 instead of Laravel 11
+
+If you want to use Laravel 10 instead Laravel 11, you can pass the `l10` option during installation :
+
+```bash
+larafil install --create-user --l10 --serve
+```
+
+Nota : you can't use `l10` and `mysql` option together. That's because Laravel 10 use mysql by default. For Laravel 11, it's SQLite by default.
+If you try to use both together, you will have an error and the install stops.
 
 The purpose of Larafil was to play with Laravel Zero from [Nuno Maduro](https://github.com/nunomaduro).
 

@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.3.0] - 2024-05-01
+
+### Added 
+
+- a `--l10` option to install Laravel 10 instead of Laravel 11
+
 ## [0.2.4] - 2024-05-01
 
 ### Removed
