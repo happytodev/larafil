@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.4.0] - 2024-05-01
+
+### Added 
+
+- a `--filament-url` option to set an admin url different to default one 'admin'
+
 ## [0.3.1] - 2024-05-01
 
 ### Changed 

@@ -15,6 +15,7 @@ class Install extends Command
      */
     protected $signature = 'install
                             {--create-user}
+                            {--filament-url=admin}
                             {--laravel-version=current}
                             {--mysql}
                             {--serve}';
@@ -29,6 +30,7 @@ class Install extends Command
     protected $description = 'Install Laravel and Filament.' . PHP_EOL .
         '               Options:' . PHP_EOL .
         '                  * --create-user: Whether an user should be created' . PHP_EOL .
+        '                  * --filament-url: Choose the url for FilamentPHP admin' . PHP_EOL .
         "                  * --laravel-version: Choose the version of Laravel you want to install. The possible options are 'previous', 'current'" . PHP_EOL .
         '                  * --mysql: Whether a mysql database has to be used instead the sqlite default one (Do not use with l10 option)' . PHP_EOL .
         '                  * --serve: Whether the integrated server should be run';
@@ -78,6 +80,11 @@ class Install extends Command
         $this->info("Installing Filament...");
         passthru('composer require filament/filament:^3.2 -W');
         passthru('php artisan filament:install --panels --no-interaction');
+
+        if ($this->hasOption('filament-url')) {
+            // @todo : add check on url string
+            $this->setFilamentAdminUrl($this->option('filament-url'));
+        }
 
         // Check if we need to create an user
         if ($this->hasOption('create-user') && $this->option('create-user') === true) {
@@ -210,5 +217,19 @@ class Install extends Command
     private function runMigrations()
     {
         passthru('php artisan migrate');
+    }
+
+
+    private function setFilamentAdminUrl(string $url)
+    {
+        file_put_contents('app/Providers/Filament/AdminPanelProvider.php', str_replace(
+            [
+                "->path('admin')"
+            ],
+            [
+                "->path('$url')"
+            ],
+            file_get_contents('app/Providers/Filament/AdminPanelProvider.php')
+        ));
     }
 }
