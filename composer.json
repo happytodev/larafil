@@ -16,7 +16,8 @@
     ],
     "require": {
         "php": "^8.2.0",
-        "illuminate/database": "^11.5"
+        "illuminate/database": "^11.5",
+        "laravel-zero/phar-updater": "^1.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
