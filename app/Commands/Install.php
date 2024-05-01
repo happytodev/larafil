@@ -15,6 +15,7 @@ class Install extends Command
      */
     protected $signature = 'install
                             {--create-user}
+                            {--l10}
                             {--mysql}
                             {--serve}';
 
@@ -26,7 +27,8 @@ class Install extends Command
     protected $description = 'Install Laravel and Filament.' . PHP_EOL .
         '               Options:' . PHP_EOL .
         '                  * --create-user: Whether an user should be created' . PHP_EOL .
-        '                  * --mysql: Whether a mysql database has to be used instead the sqlite default one' . PHP_EOL .
+        '                  * --l10: Whether Laravel 10 should be installed instead the last Laravel version' . PHP_EOL .
+        '                  * --mysql: Whether a mysql database has to be used instead the sqlite default one (Do not use with l10 option)' . PHP_EOL .
         '                  * --serve: Whether the integrated server should be run';
 
     /**
@@ -38,21 +40,50 @@ class Install extends Command
         $applicationName = $this->ask('Application name');
 
         // Create Laravel Project
-        $this->info("Creating Laravel project '{$applicationName}'...");
-        $exresult = passthru('composer create-project laravel/laravel ' . $applicationName);
+        // If user choose Laravel 10, then we have to create mysql database 
+        // because sqlite is not the default database
+        if ($this->hasOption('l10') && $this->option('l10') === true) {
 
-        // Move to project folder
-        chdir($applicationName);
+            // detect if user uses 'l10' and 'mysql' together which are incompatibles
+            if ($this->hasOption('mysql') && $this->option('mysql') === true) {
+                $this->error("You can't use `l10` and `mysql` options together because Laravel 10 use by default mysql connection");
+                exit(1);
+            }
+
+            $this->info("Creating Laravel 10 project '{$applicationName}'...");
+            $exresult = passthru('composer create-project laravel/laravel:10 ' . $applicationName);
+
+            chdir($applicationName);
+            
+            // Creating the mysql database
+            $this->info("Change configuration in your .env file");
+            $this->configureDatabaseL10($applicationName);
+            
+            $this->info("Creating the mysql database...");
+            $this->createDatabase($applicationName);
+            
+            $this->info("Running the migration...");    
+            $this->runMigrations();
+        } else {
+            $this->info("Creating Laravel project '{$applicationName}'...");
+            $exresult = passthru('composer create-project laravel/laravel ' . $applicationName);
+
+            // Move to project folder
+            chdir($applicationName);
+        }
 
 
         // Check if a mysql database need to be installed instead the sqlite default one
         if ($this->hasOption('mysql') && $this->option('mysql') === true) {
             $this->info("Change configuration in your .env file");
             $this->configureDatabase($applicationName);
+
             $this->info("Creating the mysql database...");
             $this->createDatabase($applicationName);
+
             $this->info("Running the migration...");
             $this->runMigrations();
+            
             $this->info("Removing sqlite database...");
             $this->deleteSqliteDatabase();
         }
@@ -113,7 +144,23 @@ class Install extends Command
         ));
     }
 
-    private function createDatabase(string $databaseName)
+    // Replace database name 'laravel' by app name
+    private function configureDatabaseL10(string $databaseName)
+    {
+        $dbName = "$databaseName";
+
+        file_put_contents('.env', str_replace(
+            [
+                'DB_DATABASE=laravel',
+            ],
+            [
+                'DB_DATABASE=' . $dbName,
+            ],
+            file_get_contents('.env')
+        ));
+    }
+
+    private function createDatabase()
     {
         passthru('php artisan config:cache');
         passthru('php artisan migrate --force');
@@ -128,6 +175,6 @@ class Install extends Command
 
     private function runMigrations()
     {
-        Artisan::call('migrate');
+        passthru('php artisan migrate');
     }
 }
