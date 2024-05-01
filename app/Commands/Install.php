@@ -15,9 +15,11 @@ class Install extends Command
      */
     protected $signature = 'install
                             {--create-user}
-                            {--l10}
+                            {--laravel-version=current}
                             {--mysql}
                             {--serve}';
+
+    protected string $applicationName;
 
     /**
      * The console command description.
@@ -27,7 +29,7 @@ class Install extends Command
     protected $description = 'Install Laravel and Filament.' . PHP_EOL .
         '               Options:' . PHP_EOL .
         '                  * --create-user: Whether an user should be created' . PHP_EOL .
-        '                  * --l10: Whether Laravel 10 should be installed instead the last Laravel version' . PHP_EOL .
+        "                  * --laravel-version: Choose the version of Laravel you want to install. The possible options are 'previous', 'current'" . PHP_EOL .
         '                  * --mysql: Whether a mysql database has to be used instead the sqlite default one (Do not use with l10 option)' . PHP_EOL .
         '                  * --serve: Whether the integrated server should be run';
 
@@ -37,49 +39,33 @@ class Install extends Command
     public function handle()
     {
         // Ask for application name
-        $applicationName = $this->ask('Application name');
+        $this->applicationName = $this->ask('Application name');
 
-        // Create Laravel Project
-        // If user choose Laravel 10, then we have to create mysql database 
-        // because sqlite is not the default database
-        if ($this->hasOption('l10') && $this->option('l10') === true) {
-
-            // detect if user uses 'l10' and 'mysql' together which are incompatibles
-            if ($this->hasOption('mysql') && $this->option('mysql') === true) {
-                $this->error("You can't use `l10` and `mysql` options together because Laravel 10 use by default mysql connection");
+        if ($this->hasOption('laravel-version')) {
+            try {
+                match ($this->option('laravel-version')) {
+                    'previous' => $this->installPreviousLaravel(),
+                    'current', '' => $this->installCurrentLaravel(),
+                    // 'dev' => $this->installDevLaravel(),
+                    'default' => $this->installCurrentLaravel()
+                };    //code...
+            } catch (\UnhandledMatchError $e) {
+                $this->error("You can't use other option than 'previous' or 'current'");
                 exit(1);
             }
-
-            $this->info("Creating Laravel 10 project '{$applicationName}'...");
-            $exresult = passthru('composer create-project laravel/laravel:10 ' . $applicationName);
-
-            chdir($applicationName);
-            
-            // Creating the mysql database
-            $this->info("Change configuration in your .env file");
-            $this->configureDatabaseL10($applicationName);
-            
-            $this->info("Creating the mysql database...");
-            $this->createDatabase($applicationName);
-            
-            $this->info("Running the migration...");    
-            $this->runMigrations();
-        } else {
-            $this->info("Creating Laravel project '{$applicationName}'...");
-            $exresult = passthru('composer create-project laravel/laravel ' . $applicationName);
-
-            // Move to project folder
-            chdir($applicationName);
+        } else 
+        {
+            // Install current Laravel version by default
+            $this->installCurrentLaravel();
         }
-
 
         // Check if a mysql database need to be installed instead the sqlite default one
         if ($this->hasOption('mysql') && $this->option('mysql') === true) {
             $this->info("Change configuration in your .env file");
-            $this->configureDatabase($applicationName);
+            $this->configureDatabase($this->applicationName);
 
             $this->info("Creating the mysql database...");
-            $this->createDatabase($applicationName);
+            $this->createDatabase($this->applicationName);
 
             $this->info("Running the migration...");
             $this->runMigrations();
@@ -172,6 +158,54 @@ class Install extends Command
             unlink('database/database.sqlite');
         }
     }
+
+    private function installPreviousLaravel()
+    {
+        $this->info('You choose to install previous version of Laravel');
+
+        // detect if user uses 'l10' and 'mysql' together which are incompatibles
+        if ($this->hasOption('mysql') && $this->option('mysql') === true) {
+            $this->error("You can't use `l10` and `mysql` options together because Laravel 10 use by default mysql connection");
+            exit(1);
+        }
+
+        $this->info("Creating Laravel 10 project '{$this->applicationName}'...");
+        $exresult = passthru('composer create-project laravel/laravel:10 ' . $this->applicationName);
+
+        chdir($this->applicationName);
+        
+        // Creating the mysql database
+        $this->info("Change configuration in your .env file");
+        $this->configureDatabaseL10($this->applicationName);
+        
+        $this->info("Creating the mysql database...");
+        $this->createDatabase($this->applicationName);
+        
+        $this->info("Running the migration...");    
+        $this->runMigrations();
+    }
+
+    private function installCurrentLaravel()
+    {
+        $this->info('You choose to install the current version of Laravel');
+
+        $this->info("Creating Laravel project '{$this->applicationName}'...");
+        $exresult = passthru('composer create-project laravel/laravel ' . $this->applicationName);
+
+        // Move to project folder
+        chdir($this->applicationName);
+    }
+
+    // private function installDevLaravel()
+    // {
+    //     $this->info('You choose to install the development version of Laravel');
+
+    //     $this->info("Creating Laravel project '{$this->applicationName}'...");
+    //     $exresult = passthru('composer create-project laravel/laravel ' . $this->applicationName . ' dev-master');
+
+    //     // Move to project folder
+    //     chdir($this->applicationName);
+    // }
 
     private function runMigrations()
     {

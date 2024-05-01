@@ -58,7 +58,7 @@ larafil install --create-user --mysql --serve
 If you want to use Laravel 10 instead Laravel 11, you can pass the `l10` option during installation :
 
 ```bash
-larafil install --create-user --l10 --serve
+larafil install --create-user --laravel-version=previous --serve
 ```
 
 Nota : you can't use `l10` and `mysql` option together. That's because Laravel 10 use mysql by default. For Laravel 11, it's SQLite by default.
