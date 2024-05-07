@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.5.0] - 2024-05-07
+
+### Added 
+
+- Larafil can now install some Filament packages automatically. It asks you during the installation. For now, only these plugins are supported as a proof of concept : 'None (default)', 'Breezy', 'Curator', 'Shield', 'Spatie Role Permissions'
+
 ## [0.4.0] - 2024-05-01
 
 ### Added 

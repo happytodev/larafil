@@ -20,6 +20,7 @@ With this single line, **Larafil**
 - change default SQLite database by a MySQL database in your `.env` file, create the MySQL database, launch migrations, remove `database.sqlite` database
 - will install FilamentPHP
 - ask you to create the first Filament user
+- ask you if you want to install some Filament Plugins (For now, only these plugins are supported as a proof of concept : 'None (default)', 'Breezy', 'Curator', 'Shield', 'Spatie Role Permissions')
 - change the FilamentPHP admin URL to `batcave`
 - start the integrated server
 
