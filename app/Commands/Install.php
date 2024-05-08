@@ -2,7 +2,6 @@
 
 namespace App\Commands;
 
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
@@ -21,7 +20,11 @@ class Install extends Command
                             {--mysql}
                             {--serve}';
 
+    // To store application name
     protected string $applicationName;
+
+    // To store directory name. It is the application name cleaned
+    protected string $directoryName;
 
     /**
      * The console command description.
@@ -51,6 +54,9 @@ class Install extends Command
             $this->applicationName = $this->ask('Application name');
         }
 
+        // Check application name and clean it if necessary
+        $this->checkApplicationName();
+
         if ($this->hasOption('laravel-version')) {
             try {
                 match ($this->option('laravel-version')) {
@@ -58,7 +64,7 @@ class Install extends Command
                     'current', '' => $this->installCurrentLaravel(),
                     // 'dev' => $this->installDevLaravel(),
                     'default' => $this->installCurrentLaravel()
-                };    //code...
+                };    
             } catch (\UnhandledMatchError $e) {
                 $this->error("You can't use other option than 'previous' or 'current'");
                 exit(1);
@@ -71,7 +77,7 @@ class Install extends Command
         // Check if a mysql database need to be installed instead the sqlite default one
         if ($this->hasOption('mysql') && $this->option('mysql') === true) {
             $this->info("Change configuration in your .env file");
-            $this->configureDatabase($this->applicationName);
+            $this->configureDatabase($this->directoryName);
 
             $this->info("Creating the mysql database...");
             $this->createDatabase($this->applicationName);
@@ -309,6 +315,30 @@ class AdminPanelProvider extends PanelProvider'
         $bar->finish();
     }
 
+    /**
+     * Check application name
+     *
+     * @return void
+     */
+    private function checkApplicationName(): void
+    {
+        // Check that the application name is correct
+        if (!preg_match('/^[a-zA-Z]/', $this->applicationName)) {
+            $this->error("Le nom de l'application doit commencer par une lettre.");
+            exit(1); // Stop execution in the event of an error
+        }
+
+        // If application name contains unauthorised characters we will
+        // encapsulated the application name with double quotes
+        if (!preg_match('/^[a-zA-Z0-9\s\']+$/u', $this->applicationName)) {
+            $this->applicationName = '"' . $this->applicationName . '"';
+        }
+
+        // Replace special characters while preserving accented characters
+        $this->directoryName = strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $this->applicationName));
+        $this->directoryName = preg_replace('/[^a-zA-Z0-9]/', '', $this->directoryName);
+    }
+
     private function configureDatabase(string $databaseName)
     {
         $dbHost = '127.0.0.1';
@@ -385,18 +415,19 @@ class AdminPanelProvider extends PanelProvider'
             exit(1);
         }
 
-        $this->info("Creating Laravel 10 project '{$this->applicationName}'...");
-        $exresult = passthru('composer create-project laravel/laravel:10 ' . $this->applicationName);
+        $this->info("Creating Laravel 10 project '{$this->directoryName}'...");
+        $exresult = passthru('composer create-project laravel/laravel:10 ' . $this->directoryName);
 
-        chdir($this->applicationName);
+        chdir($this->directoryName);
 
         // Creating the mysql database
         $this->info("Change configuration in your .env file");
-        $this->configureDatabaseL10($this->applicationName);
+        $this->configureDatabaseL10($this->directoryName);
         $this->configureEnvAppName($this->applicationName);
 
         $this->info("Creating the mysql database...");
-        $this->createDatabase($this->applicationName);
+        dd($this->directoryName);
+        $this->createDatabase($this->directoryName);
 
         $this->info("Running the migration...");
         $this->runMigrations();
@@ -406,11 +437,11 @@ class AdminPanelProvider extends PanelProvider'
     {
         $this->info('You choose to install the current version of Laravel');
 
-        $this->info("Creating Laravel project '{$this->applicationName}'...");
-        $exresult = passthru('composer create-project -q laravel/laravel ' . $this->applicationName);
+        $this->info("Creating Laravel project '{$this->directoryName}'...");
+        $exresult = passthru('composer create-project -q laravel/laravel ' . $this->directoryName);
 
         // Move to project folder
-        chdir($this->applicationName);
+        chdir($this->directoryName);
 
         $this->configureEnvAppName($this->applicationName);
     }
