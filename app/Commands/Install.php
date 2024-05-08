@@ -353,6 +353,15 @@ class AdminPanelProvider extends PanelProvider'
         ));
     }
 
+    // Set application name in .env file
+    private function configureEnvAppName(string $applicationName): void {
+        $this->initializeFileForSearchAndReplace(
+            '.env',
+            'APP_NAME=Laravel',
+            'APP_NAME=' . $applicationName
+        );
+    }
+
     private function createDatabase()
     {
         passthru('php artisan config:cache');
@@ -384,6 +393,7 @@ class AdminPanelProvider extends PanelProvider'
         // Creating the mysql database
         $this->info("Change configuration in your .env file");
         $this->configureDatabaseL10($this->applicationName);
+        $this->configureEnvAppName($this->applicationName);
 
         $this->info("Creating the mysql database...");
         $this->createDatabase($this->applicationName);
@@ -401,6 +411,8 @@ class AdminPanelProvider extends PanelProvider'
 
         // Move to project folder
         chdir($this->applicationName);
+
+        $this->configureEnvAppName($this->applicationName);
     }
 
     // private function installDevLaravel()
