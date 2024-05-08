@@ -14,6 +14,7 @@ class Install extends Command
      * @var string
      */
     protected $signature = 'install
+                            {name?}
                             {--create-user}
                             {--filament-url=admin}
                             {--laravel-version=current}
@@ -28,6 +29,8 @@ class Install extends Command
      * @var string
      */
     protected $description = 'Install Laravel and Filament.' . PHP_EOL .
+        '               Argument:' . PHP_EOL .
+        '                  * name: You can provide directly the name of the application. If not, Larafil ask you for it' . PHP_EOL .
         '               Options:' . PHP_EOL .
         '                  * --create-user: Whether an user should be created' . PHP_EOL .
         '                  * --filament-url: Choose the url for FilamentPHP admin' . PHP_EOL .
@@ -40,8 +43,13 @@ class Install extends Command
      */
     public function handle()
     {
-        // Ask for application name
-        $this->applicationName = $this->ask('Application name');
+        // Get name from argument if provided
+        if ($this->hasArgument('name') && $this->argument('name') !== null) {
+            $this->applicationName = $this->argument('name');
+        } else {
+            // Ask for application name
+            $this->applicationName = $this->ask('Application name');
+        }
 
         if ($this->hasOption('laravel-version')) {
             try {
