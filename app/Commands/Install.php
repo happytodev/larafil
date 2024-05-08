@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use PDO;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
@@ -25,6 +26,9 @@ class Install extends Command
 
     // To store directory name. It is the application name cleaned
     protected string $directoryName;
+
+    // Store db_connection
+    protected string $db_connection = 'sqlite';
 
     /**
      * The console command description.
@@ -76,6 +80,8 @@ class Install extends Command
 
         // Check if a mysql database need to be installed instead the sqlite default one
         if ($this->hasOption('mysql') && $this->option('mysql') === true) {
+            $this->db_connection = 'mysql';
+
             $this->info("Change configuration in your .env file");
             $this->configureDatabase($this->directoryName);
 
@@ -399,8 +405,43 @@ class AdminPanelProvider extends PanelProvider'
 
     private function createDatabase()
     {
+        if ($this->databaseExists($this->directoryName, $this->db_connection)) {
+            $this->error("Database '$this->directoryName' already exists.");
+            exit(1); // Stop execution in the event of an error
+        }
+
         passthru('php artisan config:cache');
         passthru('php artisan migrate --force');
+    }
+
+
+    private function databaseExists($databaseName, $connection)
+    {
+        if ($connection === 'sqlite') {
+            // check if sqlite already exists. Normally this use case is impossible
+            // because we check the directory name of application does'nt exists
+            return file_exists('database/database.sqlite');
+        } elseif ($connection === 'mysql') {
+             $pdo = new PDO("mysql:host=127.0.0.1", "root", "");
+
+           // Preparing the SQL query to list all the databases
+            $statement = $pdo->prepare("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = :databaseName");
+
+            // Execute the query with the database name as parameter
+            $statement->execute(['databaseName' => $databaseName]);
+
+            // Retrieving results
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+            // Closing the PDO connection
+            $pdo = null;
+
+            // Check whether the database already exists
+            return $result !== false;
+        } else {
+            // Database type not supported
+            return false;
+        }
     }
 
     private function deleteSqliteDatabase()
@@ -431,7 +472,6 @@ class AdminPanelProvider extends PanelProvider'
         $this->configureEnvAppName($this->applicationName);
 
         $this->info("Creating the mysql database...");
-        dd($this->directoryName);
         $this->createDatabase($this->directoryName);
 
         $this->info("Running the migration...");
