@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.6.2] - 2024-05-08
+
+### Added 
+
+- Check if database with directory name already exists
+
 ## [0.6.1] - 2024-05-08
 
 ### Added 
