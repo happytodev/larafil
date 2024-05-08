@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.6.0] - 2024-05-08
+
+### Added 
+
+- Now, it is possible to provide name of the application directly with the install command : `larafil install myNewAwesomeProject`. This argument is optionnal, if you don't provide the name, Larafil will ask you for it.
+
+
 ## [0.5.0] - 2024-05-07
 
 ### Added 
