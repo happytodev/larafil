@@ -337,6 +337,11 @@ class AdminPanelProvider extends PanelProvider'
         // Replace special characters while preserving accented characters
         $this->directoryName = strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $this->applicationName));
         $this->directoryName = preg_replace('/[^a-zA-Z0-9]/', '', $this->directoryName);
+
+        if (file_exists($this->directoryName)) {
+            $this->error("The directory for the application already exists. Please choose another name.");
+            exit(1); // Stop execution in the event of an error
+        }
     }
 
     private function configureDatabase(string $databaseName)
