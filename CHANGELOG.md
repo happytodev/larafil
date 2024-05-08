@@ -9,13 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Set application name in .env file 
-- Add some checks on application name
-- Check if directory name for application already exists
-
 ### Changed
 
 ### Removed
+
+## [0.6.1] - 2024-05-08
+
+### Added 
+
+- Set application name in .env file 
+- Add some checks on application name
+- Check if directory name for application already exists
 
 ## [0.6.0] - 2024-05-08
 
