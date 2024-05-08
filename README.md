@@ -11,12 +11,11 @@ In one line, you can install Laravel and FilamenPHP :
 
 Exemple : 
 
-`larafil install --create-user --filament-url=batcave --mysql --serve`
+`larafil install myNewAwesomeProject --create-user --filament-url=batcave --mysql --serve`
 
 With this single line, **Larafil**
 
-- ask you the name of the project
-- will install Laravel (last version)
+- will install Laravel (last version) in a directory called `myNewAwesomeProject`
 - change default SQLite database by a MySQL database in your `.env` file, create the MySQL database, launch migrations, remove `database.sqlite` database
 - will install FilamentPHP
 - ask you to create the first Filament user
@@ -25,6 +24,12 @@ With this single line, **Larafil**
 - start the integrated server
 
 Every option is optional.
+
+If you don't provide the name of the application, Larafil will ask you for it, so you can perfectly use this command instead of that above : 
+
+`larafil install --create-user --filament-url=batcave --mysql --serve`
+
+when Larafil will ask you for the name of the project, it wiil be up to you to give you the name.
 
 ## How to use Larafil
 
